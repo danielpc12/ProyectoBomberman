@@ -3,7 +3,6 @@ package inteligentes.levels;
 import static inteligentes.BombermanGame._level;
 import static inteligentes.entities.block.Portal.isPortal;
 
-import javafx.scene.image.Image;
 
 public class NextLevel {
     public static boolean wait;
