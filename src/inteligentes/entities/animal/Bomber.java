@@ -2,13 +2,17 @@ package inteligentes.entities.animal;
 
 import static inteligentes.BombermanGame.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import inteligentes.control.Move;
 import inteligentes.entities.animal.intelligent.AStar;
 import inteligentes.entities.animal.intelligent.BFS;
+import inteligentes.entities.animal.intelligent.BeamSearch;
 import inteligentes.entities.animal.intelligent.DFS;
+import inteligentes.entities.animal.intelligent.HillClimbing;
 import inteligentes.entities.animal.intelligent.Node;
+import inteligentes.entities.animal.intelligent.UniformCost;
 import inteligentes.graphics.Sprite;
 import javafx.scene.image.Image;
 
@@ -104,21 +108,21 @@ public class Bomber extends Animal {
             case "DFS":
                 moveDFS();
                 break;
-             case "BFS":
+            case "BFS":
                 moveBFS();
                 break;
-            // case "Uniform Cost":
-            //     moveUniformCost();
-            //     break;
-            // case "Hill Climbing":
-            //     moveHillClimbing();
-            //     break;
-            // case "Beam Search":
-            //     moveBeamSearch();
-            //     break;
-            // default:
-            //     moveAStar();
-            //     break;
+            case "Uniform Cost":
+                moveUniformCost();
+                break;
+            case "Hill Climbing":
+                moveHillClimbing();
+                break;
+            case "Beam Search":
+                moveBeamSearch();
+                break;
+            default:
+                moveAStar();
+                break;
         }
         
     }
@@ -248,6 +252,124 @@ public void moveBFS() {
     }
 }
 
+public void moveUniformCost() {
+    if (this.y % 32 == 0 && this.x % 32 == 0) {
+        Node initialNode = new Node(player.getY() / 32, player.getX() / 32);
+        Node finalNode = new Node(FinalRow, FinalColumn);
+
+        int rows = _height;
+        int cols = _width;
+        System.out.println(selectedAlgorithm);
+
+        UniformCost uniformCost = new UniformCost(rows, cols, initialNode, finalNode);
+
+        int[][] blocksArray = new int[_width * _height][2];
+        int countBlock = 0;
+
+        for (int i = 0; i < _height; i++) {
+            for (int j = 0; j < _width; j++) {
+                if (idObjects[j][i] != 0) {
+                    blocksArray[countBlock][0] = i;
+                    blocksArray[countBlock][1] = j;
+                    countBlock++;
+                }
+            }
+        }
+
+        uniformCost.setBlocks(blocksArray, countBlock);
+        List<Node> path = uniformCost.findPath();
+        if (path.size() > 1) {
+            int nextY = path.get(1).getRow();
+            int nextX = path.get(1).getCol();
+
+            if (this.y / 32 > nextY)
+                Move.up(this);
+            if (this.y / 32 < nextY)
+                Move.down(this);
+            if (this.x / 32 > nextX)
+                Move.left(this);
+            if (this.x / 32 < nextX)
+                Move.right(this);
+        }
+    }
+}
+
+public void moveBeamSearch() {
+    if (this.y % 32 == 0 && this.x % 32 == 0) {
+        int beamWidth = 3; // Define el ancho del haz deseado
+        System.out.println(selectedAlgorithm);
+        Node initialNode = new Node(player.getY() / 32, player.getX() / 32);
+        Node finalNode = new Node(FinalRow, FinalColumn);
+
+        BeamSearch beamSearch = new BeamSearch(beamWidth);
+
+        List<Node> allNodes = new ArrayList<>();
+        for (int i = 0; i < _height; i++) {
+            for (int j = 0; j < _width; j++) {
+                if (idObjects[j][i] == 0) {
+                    allNodes.add(new Node(i, j));
+                }
+            }
+        }
+
+        List<Node> path = beamSearch.search(initialNode, finalNode, allNodes);
+        if (path.size() > 1) {
+            int nextY = path.get(1).getRow() * 32;
+            int nextX = path.get(1).getCol() * 32;
+
+            if (this.y > nextY)
+                Move.up(this);
+            if (this.y < nextY)
+                Move.down(this);
+            if (this.x > nextX)
+                Move.left(this);
+            if (this.x < nextX)
+                Move.right(this);
+        }
+    }
+}
+
+public void moveHillClimbing() {
+    if (this.y % 32 == 0 && this.x % 32 == 0) {
+        Node initialNode = new Node(player.getY() / 32, player.getX() / 32);
+        Node finalNode = new Node(FinalRow, FinalColumn);
+        Node[][] searchArea = createSearchArea(); // Método para crear el área de búsqueda según tu implementación
+
+        HillClimbing hillClimbing = new HillClimbing(initialNode, finalNode, searchArea);
+
+        List<Node> path = hillClimbing.findPath();
+        if (path.size() > 1) {
+            int nextY = path.get(1).getRow() * 32;
+            int nextX = path.get(1).getCol() * 32;
+
+            if (this.y > nextY)
+                Move.up(this);
+            if (this.y < nextY)
+                Move.down(this);
+            if (this.x > nextX)
+                Move.left(this);
+            if (this.x < nextX)
+                Move.right(this);
+        }
+    }
+}
+
+private Node[][] createSearchArea() {
+    Node[][] searchArea = new Node[_height][_width];
+
+    for (int i = 0; i < _height; i++) {
+        for (int j = 0; j < _width; j++) {
+            if (idObjects[j][i] == 0) {
+                searchArea[i][j] = new Node(i, j);
+            } else {
+                searchArea[i][j] = new Node(i, j);
+                searchArea[i][j].setBlock(true);
+            }
+        }
+    }
+
+    return searchArea;
+}
 
 
     @Override
