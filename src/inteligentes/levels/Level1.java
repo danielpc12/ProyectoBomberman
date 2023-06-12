@@ -25,13 +25,7 @@ public class Level1 {
 
         player.setImg(Sprite.player_right_2.getFxImage());
 
-        Animal enemy1 = new Ballom(4, 4, Sprite.ballom_left1.getFxImage());
-        Animal enemy2 = new Ballom(9, 9, Sprite.ballom_left1.getFxImage());
-        enemy.add(enemy1);
-        enemy.add(enemy2);
 
-        Animal enemy4 = new Oneal(7, 7, Sprite.oneal_right1.getFxImage());
-        enemy.add(enemy4);
 
         for (Animal animal : enemy) {
             animal.setLife(true);

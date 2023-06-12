@@ -6,6 +6,8 @@ import java.util.List;
 
 import inteligentes.control.Move;
 import inteligentes.entities.animal.intelligent.AStar;
+import inteligentes.entities.animal.intelligent.BFS;
+import inteligentes.entities.animal.intelligent.DFS;
 import inteligentes.entities.animal.intelligent.Node;
 import inteligentes.graphics.Sprite;
 import javafx.scene.image.Image;
@@ -95,12 +97,40 @@ public class Bomber extends Animal {
     }
 
     private void move() {
+        switch (selectedAlgorithm) {
+            case "A*":
+                moveAStar();
+                break;
+            case "DFS":
+                moveDFS();
+                break;
+             case "BFS":
+                moveBFS();
+                break;
+            // case "Uniform Cost":
+            //     moveUniformCost();
+            //     break;
+            // case "Hill Climbing":
+            //     moveHillClimbing();
+            //     break;
+            // case "Beam Search":
+            //     moveBeamSearch();
+            //     break;
+            // default:
+            //     moveAStar();
+            //     break;
+        }
+        
+    }
+
+    public void moveAStar(){
         if (this.y % 32 == 0 && this.x % 32 == 0) {
             Node initialNode = new Node(player.getY() / 32, player.getX() / 32);
             Node finalNode = new Node(FinalRow, FinalColumn);
 
             int rows = _height;
             int cols = _width;
+            System.out.println(selectedAlgorithm);
 
             AStar aStar = new AStar(rows, cols, initialNode, finalNode);
 
@@ -134,6 +164,91 @@ public class Bomber extends Animal {
             }
         }
     }
+
+    public void moveDFS() {
+        if (this.y % 32 == 0 && this.x % 32 == 0) {
+            Node initialNode = new Node(player.getY() / 32, player.getX() / 32);
+            Node finalNode = new Node(FinalRow, FinalColumn);
+
+            int rows = _height;
+            int cols = _width;
+            System.out.println(selectedAlgorithm);
+
+            DFS dfs = new DFS(rows, cols, initialNode, finalNode);
+
+            int[][] blocksArray = new int[_width * _height][2];
+            int countBlock = 0;
+
+            for (int i = 0; i < _height; i++) {
+                for (int j = 0; j < _width; j++) {
+                    if (idObjects[j][i] != 0) {
+                        blocksArray[countBlock][0] = i;
+                        blocksArray[countBlock][1] = j;
+                        countBlock++;
+                    }
+                }
+            }
+
+            dfs.setBlocks(blocksArray, countBlock);
+            List<Node> path = dfs.findPath();
+            if (path.size() > 1) {
+                int nextY = path.get(1).getRow();
+                int nextX = path.get(1).getCol();
+
+                if (this.y / 32 > nextY)
+                    Move.up(this);
+                if (this.y / 32 < nextY)
+                    Move.down(this);
+                if (this.x / 32 > nextX)
+                    Move.left(this);
+                if (this.x / 32 < nextX)
+                    Move.right(this);
+            }
+        }
+    }
+
+public void moveBFS() {
+    if (this.y % 32 == 0 && this.x % 32 == 0) {
+        Node initialNode = new Node(player.getY() / 32, player.getX() / 32);
+        Node finalNode = new Node(FinalRow, FinalColumn);
+
+        int rows = _height;
+        int cols = _width;
+
+        BFS bfs = new BFS(rows, cols, initialNode, finalNode);
+
+        int[][] blocksArray = new int[_width * _height][2];
+        int countBlock = 0;
+
+        for (int i = 0; i < _height; i++) {
+            for (int j = 0; j < _width; j++) {
+                if (idObjects[j][i] != 0) {
+                    blocksArray[countBlock][0] = i;
+                    blocksArray[countBlock][1] = j;
+                    countBlock++;
+                }
+            }
+        }
+
+        bfs.setBlocks(blocksArray, countBlock);
+        List<Node> path = bfs.findPath();
+        if (path.size() > 1) {
+            int nextY = path.get(1).getRow();
+            int nextX = path.get(1).getCol();
+
+            if (this.y / 32 > nextY)
+                Move.up(this);
+            if (this.y / 32 < nextY)
+                Move.down(this);
+            if (this.x / 32 > nextX)
+                Move.left(this);
+            if (this.x / 32 < nextX)
+                Move.right(this);
+        }
+    }
+}
+
+
 
     @Override
     public void update() {

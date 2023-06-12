@@ -1,25 +1,44 @@
 package inteligentes.entities.animal.intelligent;
 
-import java.util.*;
-
-import inteligentes.BombermanGame;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Stack;
 
 public class DFS {
-    private Stack<Node> stack;
-    private Set<Node> visitedNodes;
+    private Node[][] searchArea;
     private Node initialNode;
     private Node finalNode;
+    private boolean[][] visited;
 
-    public DFS(Node initialNode, Node finalNode) {
-        this.stack = new Stack<>();
-        this.visitedNodes = new HashSet<>();
+    public DFS(int rows, int cols, Node initialNode, Node finalNode) {
         setInitialNode(initialNode);
         setFinalNode(finalNode);
+        this.searchArea = new Node[rows][cols];
+        setNodes();
+        this.visited = new boolean[rows][cols];
+    }
+
+    private void setNodes() {
+        for (int i = 0; i < searchArea.length; i++) {
+            for (int j = 0; j < searchArea[0].length; j++) {
+                Node node = new Node(i, j);
+                node.calculateHeuristic(getFinalNode());
+                this.searchArea[i][j] = node;
+            }
+        }
+    }
+
+    public void setBlocks(int[][] blocksArray, int count) {
+        for (int i = 0; i < count; i++) {
+            int row = blocksArray[i][0];
+            int col = blocksArray[i][1];
+            setBlock(row, col);
+        }
     }
 
     public List<Node> findPath() {
+        Stack<Node> stack = new Stack<>();
         stack.push(initialNode);
-        visitedNodes.add(initialNode);
 
         while (!stack.isEmpty()) {
             Node currentNode = stack.pop();
@@ -28,7 +47,17 @@ public class DFS {
                 return getPath(currentNode);
             }
 
-            addAdjacentNodes(currentNode);
+            if (!isVisited(currentNode)) {
+                setVisited(currentNode);
+
+                List<Node> adjacentNodes = getAdjacentNodes(currentNode);
+                for (Node adjacentNode : adjacentNodes) {
+                    if (!isVisited(adjacentNode)) {
+                        adjacentNode.setParent(currentNode);
+                        stack.push(adjacentNode);
+                    }
+                }
+            }
         }
 
         return new ArrayList<>();
@@ -36,66 +65,65 @@ public class DFS {
 
     private List<Node> getPath(Node currentNode) {
         List<Node> path = new ArrayList<>();
+        path.add(currentNode);
         Node parent;
         while ((parent = currentNode.getParent()) != null) {
-            path.add(0, currentNode);
+            path.add(0, parent);
             currentNode = parent;
         }
-        path.add(0, initialNode);
         return path;
     }
 
-    private void addAdjacentNodes(Node currentNode) {
+    private List<Node> getAdjacentNodes(Node currentNode) {
+        List<Node> adjacentNodes = new ArrayList<>();
         int row = currentNode.getRow();
         int col = currentNode.getCol();
 
-        // Check right node
-        int rightCol = col + 1;
-        if (rightCol < BombermanGame.WIDTH) {
-            Node rightNode = new Node(row, rightCol);
-            if (!rightNode.isBlock() && !visitedNodes.contains(rightNode)) {
-                visitedNodes.add(rightNode);
-                rightNode.setParent(currentNode);
-                stack.push(rightNode);
+        if (row - 1 >= 0) {
+            Node upperNode = searchArea[row - 1][col];
+            if (!upperNode.isBlock()) {
+                adjacentNodes.add(upperNode);
             }
         }
 
-        // Check left node
-        int leftCol = col - 1;
-        if (leftCol >= 0) {
-            Node leftNode = new Node(row, leftCol);
-            if (!leftNode.isBlock() && !visitedNodes.contains(leftNode)) {
-                visitedNodes.add(leftNode);
-                leftNode.setParent(currentNode);
-                stack.push(leftNode);
+        if (row + 1 < searchArea.length) {
+            Node lowerNode = searchArea[row + 1][col];
+            if (!lowerNode.isBlock()) {
+                adjacentNodes.add(lowerNode);
             }
         }
 
-        // Check lower node
-        int lowerRow = row + 1;
-        if (lowerRow < BombermanGame.HEIGHT) {
-            Node lowerNode = new Node(lowerRow, col);
-            if (!lowerNode.isBlock() && !visitedNodes.contains(lowerNode)) {
-                visitedNodes.add(lowerNode);
-                lowerNode.setParent(currentNode);
-                stack.push(lowerNode);
+        if (col - 1 >= 0) {
+            Node leftNode = searchArea[row][col - 1];
+            if (!leftNode.isBlock()) {
+                adjacentNodes.add(leftNode);
             }
         }
 
-        // Check upper node
-        int upperRow = row - 1;
-        if (upperRow >= 0) {
-            Node upperNode = new Node(upperRow, col);
-            if (!upperNode.isBlock() && !visitedNodes.contains(upperNode)) {
-                visitedNodes.add(upperNode);
-                upperNode.setParent(currentNode);
-                stack.push(upperNode);
+        if (col + 1 < searchArea[0].length) {
+            Node rightNode = searchArea[row][col + 1];
+            if (!rightNode.isBlock()) {
+                adjacentNodes.add(rightNode);
             }
         }
+
+        return adjacentNodes;
     }
 
     private boolean isFinalNode(Node currentNode) {
         return currentNode.equals(finalNode);
+    }
+
+    private boolean isVisited(Node node) {
+        return visited[node.getRow()][node.getCol()];
+    }
+
+    private void setVisited(Node node) {
+        visited[node.getRow()][node.getCol()] = true;
+    }
+
+    private void setBlock(int row, int col) {
+        this.searchArea[row][col].setBlock(true);
     }
 
     public Node getInitialNode() {
@@ -112,5 +140,21 @@ public class DFS {
 
     public void setFinalNode(Node finalNode) {
         this.finalNode = finalNode;
+    }
+
+    public Node[][] getSearchArea() {
+        return searchArea;
+    }
+
+    public void setSearchArea(Node[][] searchArea) {
+        this.searchArea = searchArea;
+    }
+
+    public boolean[][] getVisited() {
+        return visited;
+    }
+
+    public void setVisited(boolean[][] visited) {
+        this.visited = visited;
     }
 }

@@ -52,6 +52,7 @@ public class BombermanGame extends Application {
     public static int InitialColumn = 0;
     public static int FinalRow = 0;
     public static int FinalColumn = 0;
+    public static String selectedAlgorithm = "";
 
     public static void main(String[] args) {
         Application.launch(BombermanGame.class);
@@ -202,10 +203,7 @@ public class BombermanGame extends Application {
                 player.setLife(false);
                 dialogStage.close();
                 
-                // Obtener el algoritmo seleccionado
-                String selectedAlgorithm = algorithmComboBox.getValue();
-                
-                // Aquí puedes hacer algo con el algoritmo seleccionado
+                selectedAlgorithm = algorithmComboBox.getValue();
                 
                 new Level1();
 
