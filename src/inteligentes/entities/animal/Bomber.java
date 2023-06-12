@@ -2,15 +2,22 @@ package inteligentes.entities.animal;
 
 import static inteligentes.BombermanGame.*;
 
+import java.util.List;
+
+import inteligentes.control.Move;
+import inteligentes.entities.animal.intelligent.AStar;
+import inteligentes.entities.animal.intelligent.Node;
 import inteligentes.graphics.Sprite;
 import javafx.scene.image.Image;
 
 public class Bomber extends Animal {
     public static int swapKill = 1;
     private static int countKill = 0;
+    private String algorithm;
 
-    public Bomber(int isMove, int swap, String direction, int count, int countToRun) {
-        super(8, 1, "down", 0, 0);
+    public Bomber(int isMove, int swap, String direction, int count, int countToRun, String algorithm) {
+        super(8, 1, direction, 0, 0);
+        this.algorithm = algorithm;
     }
 
     public Bomber() {
@@ -19,6 +26,7 @@ public class Bomber extends Animal {
     public Bomber(int x, int y, Image img) {
         super(x, y, img);
     }
+
 
     private void killBomber(Animal animal) {
         if (countKill % 16 == 0) {
@@ -86,6 +94,47 @@ public class Bomber extends Animal {
         }
     }
 
+    private void move() {
+        if (this.y % 32 == 0 && this.x % 32 == 0) {
+            Node initialNode = new Node(player.getY() / 32, player.getX() / 32);
+            Node finalNode = new Node(FinalRow, FinalColumn);
+
+            int rows = _height;
+            int cols = _width;
+
+            AStar aStar = new AStar(rows, cols, initialNode, finalNode);
+
+            int[][] blocksArray = new int[_width * _height][2];
+            int countBlock = 0;
+
+            for (int i = 0; i < _height; i++) {
+                for (int j = 0; j < _width; j++) {
+                    if (idObjects[j][i] != 0) {
+                        blocksArray[countBlock][0] = i;
+                        blocksArray[countBlock][1] = j;
+                        countBlock++;
+                    }
+                }
+            }
+
+            aStar.setBlocks(blocksArray, countBlock);
+            List<Node> path = aStar.findPath();
+            if (path.size() > 1) {
+                int nextY = path.get(1).getRow();
+                int nextX = path.get(1).getCol();
+
+                if (this.y / 32 > nextY)
+                    Move.up(this);
+                if (this.y / 32 < nextY)
+                    Move.down(this);
+                if (this.x / 32 > nextX)
+                    Move.left(this);
+                if (this.x / 32 < nextX)
+                    Move.right(this);
+            }
+        }
+    }
+
     @Override
     public void update() {
         checkBombs();
@@ -93,5 +142,7 @@ public class Bomber extends Animal {
         countKill++;
         if (!player.life)
             killBomber(player);
+        move();
     }
+
 }

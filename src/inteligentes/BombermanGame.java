@@ -10,6 +10,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -49,6 +50,8 @@ public class BombermanGame extends Application {
     public static Stage mainStage = null;
     public static int InitialRow = 0;
     public static int InitialColumn = 0;
+    public static int FinalRow = 0;
+    public static int FinalColumn = 0;
 
     public static void main(String[] args) {
         Application.launch(BombermanGame.class);
@@ -176,6 +179,11 @@ public class BombermanGame extends Application {
         TextField finalRowField = new TextField();
         Label finalColumnLabel = new Label("Columna Final:");
         TextField finalColumnField = new TextField();
+        
+        Label algorithmLabel = new Label("Algoritmo:");
+        ComboBox<String> algorithmComboBox = new ComboBox<>();
+        algorithmComboBox.getItems().addAll("A*", "BFS", "DFS", "Uniform Cost", "Beam Search", "Hill Climbing");
+        
         Button submitButton = new Button("Guardar");
 
         submitButton.setOnAction(e -> {
@@ -188,15 +196,21 @@ public class BombermanGame extends Application {
                 _height = initialColumnPosition;
                 InitialRow = initialRowPosition;
                 InitialColumn = initialColumnPosition;
+                FinalRow = finalRowPosition;
+                FinalColumn = finalColumnPosition;
                 player = new Bomber(InitialColumn, InitialRow, Sprite.player_right_2.getFxImage());
                 player.setLife(false);
                 dialogStage.close();
-                System.out.println(player.getX() + " " + player.getY());
-                System.out.println(InitialRow + " " + InitialColumn);
+                
+                // Obtener el algoritmo seleccionado
+                String selectedAlgorithm = algorithmComboBox.getValue();
+                
+                // Aquí puedes hacer algo con el algoritmo seleccionado
+                
                 new Level1();
 
                 running = true;
-                
+
             } catch (NumberFormatException ex) {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Error");
@@ -214,10 +228,15 @@ public class BombermanGame extends Application {
         grid.add(finalRowField, 1, 2);
         grid.add(finalColumnLabel, 0, 3);
         grid.add(finalColumnField, 1, 3);
-        grid.add(submitButton, 0, 4, 2, 1);
+        
+        grid.add(algorithmLabel, 0, 4);
+        grid.add(algorithmComboBox, 1, 4);
+        
+        grid.add(submitButton, 0, 5, 2, 1);
 
-        Scene dialogScene = new Scene(grid, 300, 200);
+        Scene dialogScene = new Scene(grid, 300, 250);
         dialogStage.setScene(dialogScene);
         dialogStage.showAndWait();
     }
+
 }
