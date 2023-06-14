@@ -38,9 +38,12 @@ public class DFS {
 
     public List<Node> findPath() {
         Stack<Node> stack = new Stack<>();
+        Stack<Node> visitados = new Stack<>();
         stack.push(initialNode);
+        visitados.push(initialNode);
 
         while (!stack.isEmpty()) {
+            System.out.println("Visitados: "+ visitados);
             Node currentNode = stack.pop();
 
             if (isFinalNode(currentNode)) {
@@ -55,11 +58,11 @@ public class DFS {
                     if (!isVisited(adjacentNode)) {
                         adjacentNode.setParent(currentNode);
                         stack.push(adjacentNode);
+                        visitados.push(adjacentNode);
                     }
                 }
             }
         }
-
         return new ArrayList<>();
     }
 
@@ -79,20 +82,6 @@ public class DFS {
         int row = currentNode.getRow();
         int col = currentNode.getCol();
 
-        if (row - 1 >= 0) {
-            Node upperNode = searchArea[row - 1][col];
-            if (!upperNode.isBlock()) {
-                adjacentNodes.add(upperNode);
-            }
-        }
-
-        if (row + 1 < searchArea.length) {
-            Node lowerNode = searchArea[row + 1][col];
-            if (!lowerNode.isBlock()) {
-                adjacentNodes.add(lowerNode);
-            }
-        }
-
         if (col - 1 >= 0) {
             Node leftNode = searchArea[row][col - 1];
             if (!leftNode.isBlock()) {
@@ -100,10 +89,24 @@ public class DFS {
             }
         }
 
+        if (row - 1 >= 0) {
+            Node upperNode = searchArea[row - 1][col];
+            if (!upperNode.isBlock()) {
+                adjacentNodes.add(upperNode);
+            }
+        }
+
         if (col + 1 < searchArea[0].length) {
             Node rightNode = searchArea[row][col + 1];
             if (!rightNode.isBlock()) {
                 adjacentNodes.add(rightNode);
+            }
+        }
+
+        if (row + 1 < searchArea.length) {
+            Node lowerNode = searchArea[row + 1][col];
+            if (!lowerNode.isBlock()) {
+                adjacentNodes.add(lowerNode);
             }
         }
 

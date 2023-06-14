@@ -39,6 +39,7 @@ public class AStar {
     public List<Node> findPath() {
         openList.add(initialNode);
         while (!isEmpty(openList)) {
+            System.out.println("openList: " + openList);
             Node currentNode = openList.poll();
             closedSet.add(currentNode);
             assert currentNode != null;
@@ -63,63 +64,55 @@ public class AStar {
     }
 
     private void addAdjacentNodes(Node currentNode) {
-        addAdjacentUpperRow(currentNode);
-        addAdjacentMiddleRow(currentNode);
-        addAdjacentLowerRow(currentNode);
+        addAdjacentLeftNode(currentNode);
+        addAdjacentUpperNode(currentNode);
+        addAdjacentRightNode(currentNode);
+        addAdjacentLowerNode(currentNode);
     }
 
-    private void addAdjacentLowerRow(Node currentNode) {
-        int row = currentNode.getRow();
-        int col = currentNode.getCol();
-        int lowerRow = row + 1;
-        if (lowerRow < getSearchArea().length) {
-            if (col - 1 >= 0) {
-                checkNode(currentNode, col - 1, lowerRow);
-            }
-            if (col + 1 < getSearchArea()[0].length) {
-                checkNode(currentNode, col + 1, lowerRow);
-            }
-            checkNode(currentNode, col, lowerRow);
-        }
-    }
-
-    private void addAdjacentMiddleRow(Node currentNode) {
+    private void addAdjacentLeftNode(Node currentNode) {
         int row = currentNode.getRow();
         int col = currentNode.getCol();
         if (col - 1 >= 0) {
             checkNode(currentNode, col - 1, row);
         }
-        if (col + 1 < getSearchArea()[0].length) {
+    }
+
+    private void addAdjacentUpperNode(Node currentNode) {
+        int row = currentNode.getRow();
+        int col = currentNode.getCol();
+        if (row - 1 >= 0) {
+            checkNode(currentNode, col, row - 1);
+        }
+    }
+
+    private void addAdjacentRightNode(Node currentNode) {
+        int row = currentNode.getRow();
+        int col = currentNode.getCol();
+        if (col + 1 < searchArea[0].length) {
             checkNode(currentNode, col + 1, row);
         }
     }
 
-    private void addAdjacentUpperRow(Node currentNode) {
+    private void addAdjacentLowerNode(Node currentNode) {
         int row = currentNode.getRow();
         int col = currentNode.getCol();
-        int upperRow = row - 1;
-        if (upperRow >= 0) {
-            if (col - 1 >= 0) {
-                checkNode(currentNode, col - 1, upperRow);
-            }
-            if (col + 1 < getSearchArea()[0].length) {
-                checkNode(currentNode, col + 1, upperRow);
-            }
-            checkNode(currentNode, col, upperRow);
+        if (row + 1 < searchArea.length) {
+            checkNode(currentNode, col, row + 1);
         }
     }
 
     private void checkNode(Node currentNode, int col, int row) {
-        Node adjacentNode = getSearchArea()[row][col];
-        if (!adjacentNode.isBlock() && !getClosedSet().contains(adjacentNode)) {
-            if (!getOpenList().contains(adjacentNode)) {
+        Node adjacentNode = searchArea[row][col];
+        if (!adjacentNode.isBlock() && !closedSet.contains(adjacentNode)) {
+            if (!openList.contains(adjacentNode)) {
                 adjacentNode.setNodeData(currentNode);
-                getOpenList().add(adjacentNode);
+                openList.add(adjacentNode);
             } else {
                 boolean changed = adjacentNode.checkBetterPath(currentNode);
                 if (changed) {
-                    getOpenList().remove(adjacentNode);
-                    getOpenList().add(adjacentNode);
+                    openList.remove(adjacentNode);
+                    openList.add(adjacentNode);
                 }
             }
         }
@@ -134,7 +127,7 @@ public class AStar {
     }
 
     private void setBlock(int row, int col) {
-        this.searchArea[row][col].setBlock(true);
+        searchArea[row][col].setBlock(true);
     }
 
     public Node getInitialNode() {

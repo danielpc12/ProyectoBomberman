@@ -40,6 +40,7 @@ public class BFS {
         visitedSet.add(initialNode);
 
         while (!queue.isEmpty()) {
+            System.out.println("Visitados: " + queue);
             Node currentNode = queue.poll();
 
             if (isFinalNode(currentNode)) {
@@ -69,26 +70,6 @@ public class BFS {
         int row = currentNode.getRow();
         int col = currentNode.getCol();
 
-        // Check upper neighbor
-        if (row - 1 >= 0) {
-            Node upperNode = searchArea[row - 1][col];
-            if (!upperNode.isBlock() && !visitedSet.contains(upperNode)) {
-                queue.add(upperNode);
-                visitedSet.add(upperNode);
-                upperNode.setParent(currentNode);
-            }
-        }
-
-        // Check lower neighbor
-        if (row + 1 < searchArea.length) {
-            Node lowerNode = searchArea[row + 1][col];
-            if (!lowerNode.isBlock() && !visitedSet.contains(lowerNode)) {
-                queue.add(lowerNode);
-                visitedSet.add(lowerNode);
-                lowerNode.setParent(currentNode);
-            }
-        }
-
         // Check left neighbor
         if (col - 1 >= 0) {
             Node leftNode = searchArea[row][col - 1];
@@ -99,6 +80,16 @@ public class BFS {
             }
         }
 
+        // Check upper neighbor
+        if (row - 1 >= 0) {
+            Node upperNode = searchArea[row - 1][col];
+            if (!upperNode.isBlock() && !visitedSet.contains(upperNode)) {
+                queue.add(upperNode);
+                visitedSet.add(upperNode);
+                upperNode.setParent(currentNode);
+            }
+        }
+
         // Check right neighbor
         if (col + 1 < searchArea[0].length) {
             Node rightNode = searchArea[row][col + 1];
@@ -106,6 +97,16 @@ public class BFS {
                 queue.add(rightNode);
                 visitedSet.add(rightNode);
                 rightNode.setParent(currentNode);
+            }
+        }
+
+        // Check lower neighbor
+        if (row + 1 < searchArea.length) {
+            Node lowerNode = searchArea[row + 1][col];
+            if (!lowerNode.isBlock() && !visitedSet.contains(lowerNode)) {
+                queue.add(lowerNode);
+                visitedSet.add(lowerNode);
+                lowerNode.setParent(currentNode);
             }
         }
     }

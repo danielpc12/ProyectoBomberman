@@ -23,6 +23,7 @@ public class HillClimbing {
 
             Node bestNeighbor = null;
             int bestNeighborDistance = Integer.MAX_VALUE;
+            System.out.println("Path: " + currentPath);
 
             for (Node neighbor : neighbors) {
                 int distance = calculateManhattanDistance(neighbor, finalNode);
@@ -47,11 +48,11 @@ public class HillClimbing {
         int row = currentNode.getRow();
         int col = currentNode.getCol();
 
-        // Agregar vecinos arriba, abajo, izquierda y derecha
-        addNeighbor(neighbors, row - 1, col);
-        addNeighbor(neighbors, row + 1, col);
-        addNeighbor(neighbors, row, col - 1);
-        addNeighbor(neighbors, row, col + 1);
+        // Agregar vecinos en el orden: izquierda, arriba, derecha, abajo
+        addNeighbor(neighbors, row, col - 1); // Izquierda
+        addNeighbor(neighbors, row - 1, col); // Arriba
+        addNeighbor(neighbors, row, col + 1); // Derecha
+        addNeighbor(neighbors, row + 1, col); // Abajo
 
         return neighbors;
     }

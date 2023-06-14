@@ -170,46 +170,46 @@ public class Bomber extends Animal {
     }
 
     public void moveDFS() {
-        if (this.y % 32 == 0 && this.x % 32 == 0) {
-            Node initialNode = new Node(player.getY() / 32, player.getX() / 32);
-            Node finalNode = new Node(FinalRow, FinalColumn);
+    if (this.y % 32 == 0 && this.x % 32 == 0) {
+        Node initialNode = new Node(player.getY() / 32, player.getX() / 32);
+        Node finalNode = new Node(FinalRow, FinalColumn);
 
-            int rows = _height;
-            int cols = _width;
-            System.out.println(selectedAlgorithm);
+        int rows = _height;
+        int cols = _width;
+        System.out.println(selectedAlgorithm);
 
-            DFS dfs = new DFS(rows, cols, initialNode, finalNode);
+        DFS dfs = new DFS(rows, cols, initialNode, finalNode);
 
-            int[][] blocksArray = new int[_width * _height][2];
-            int countBlock = 0;
+        int[][] blocksArray = new int[_width * _height][2];
+        int countBlock = 0;
 
-            for (int i = 0; i < _height; i++) {
-                for (int j = 0; j < _width; j++) {
-                    if (idObjects[j][i] != 0) {
-                        blocksArray[countBlock][0] = i;
-                        blocksArray[countBlock][1] = j;
-                        countBlock++;
-                    }
+        for (int i = 0; i < _height; i++) {
+            for (int j = 0; j < _width; j++) {
+                if (idObjects[j][i] != 0) {
+                    blocksArray[countBlock][0] = i;
+                    blocksArray[countBlock][1] = j;
+                    countBlock++;
                 }
             }
+        }
 
-            dfs.setBlocks(blocksArray, countBlock);
-            List<Node> path = dfs.findPath();
-            if (path.size() > 1) {
-                int nextY = path.get(1).getRow();
-                int nextX = path.get(1).getCol();
+        dfs.setBlocks(blocksArray, countBlock);
+        List<Node> path = dfs.findPath();
+        if (path.size() > 1) {
+            int nextY = path.get(1).getRow();
+            int nextX = path.get(1).getCol();
 
-                if (this.y / 32 > nextY)
-                    Move.up(this);
-                if (this.y / 32 < nextY)
-                    Move.down(this);
-                if (this.x / 32 > nextX)
-                    Move.left(this);
-                if (this.x / 32 < nextX)
-                    Move.right(this);
-            }
+            if (this.x / 32 < nextX)
+                Move.right(this);
+            if (this.x / 32 > nextX)
+                Move.left(this);
+            if (this.y / 32 < nextY)
+                Move.down(this);
+            if (this.y / 32 > nextY)
+                Move.up(this);
         }
     }
+}
 
 public void moveBFS() {
     if (this.y % 32 == 0 && this.x % 32 == 0) {
@@ -218,6 +218,7 @@ public void moveBFS() {
 
         int rows = _height;
         int cols = _width;
+        System.out.println(selectedAlgorithm);
 
         BFS bfs = new BFS(rows, cols, initialNode, finalNode);
 
@@ -240,14 +241,14 @@ public void moveBFS() {
             int nextY = path.get(1).getRow();
             int nextX = path.get(1).getCol();
 
-            if (this.y / 32 > nextY)
-                Move.up(this);
             if (this.y / 32 < nextY)
                 Move.down(this);
-            if (this.x / 32 > nextX)
-                Move.left(this);
             if (this.x / 32 < nextX)
                 Move.right(this);
+            if (this.x / 32 > nextX)
+                Move.left(this);
+            if (this.y / 32 > nextY)
+                Move.up(this);
         }
     }
 }
@@ -334,6 +335,7 @@ public void moveHillClimbing() {
         Node initialNode = new Node(player.getY() / 32, player.getX() / 32);
         Node finalNode = new Node(FinalRow, FinalColumn);
         Node[][] searchArea = createSearchArea(); // Método para crear el área de búsqueda según tu implementación
+        System.out.println(selectedAlgorithm);
 
         HillClimbing hillClimbing = new HillClimbing(initialNode, finalNode, searchArea);
 
@@ -342,13 +344,13 @@ public void moveHillClimbing() {
             int nextY = path.get(1).getRow() * 32;
             int nextX = path.get(1).getCol() * 32;
 
-            if (this.y > nextY)
+            if (this.y / 32 > nextY)
                 Move.up(this);
-            if (this.y < nextY)
+            if (this.y / 32 < nextY)
                 Move.down(this);
-            if (this.x > nextX)
+            if (this.x / 32 > nextX)
                 Move.left(this);
-            if (this.x < nextX)
+            if (this.x / 32 < nextX)
                 Move.right(this);
         }
     }

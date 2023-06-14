@@ -38,6 +38,7 @@ public class UniformCost {
     public List<Node> findPath() {
         openList.add(initialNode);
         while (!openList.isEmpty()) {
+            System.out.println("openList: " + openList);
             Node currentNode = openList.poll();
             closedSet.add(currentNode);
             if (isFinalNode(currentNode)) {
@@ -59,34 +60,24 @@ public class UniformCost {
     }
 
     private void addAdjacentNodes(Node currentNode) {
+        addAdjacentLeftColumn(currentNode);
         addAdjacentUpperRow(currentNode);
-        addAdjacentMiddleRow(currentNode);
+        addAdjacentRightColumn(currentNode);
         addAdjacentLowerRow(currentNode);
     }
 
-    private void addAdjacentLowerRow(Node currentNode) {
+    private void addAdjacentLeftColumn(Node currentNode) {
         int row = currentNode.getRow();
         int col = currentNode.getCol();
-        int lowerRow = row + 1;
-        if (lowerRow < searchArea.length) {
-            if (col - 1 >= 0) {
-                checkNode(currentNode, col - 1, lowerRow);
+        int leftColumn = col - 1;
+        if (leftColumn >= 0) {
+            if (row - 1 >= 0) {
+                checkNode(currentNode, leftColumn, row - 1);
             }
-            if (col + 1 < searchArea[0].length) {
-                checkNode(currentNode, col + 1, lowerRow);
+            if (row + 1 < searchArea.length) {
+                checkNode(currentNode, leftColumn, row + 1);
             }
-            checkNode(currentNode, col, lowerRow);
-        }
-    }
-
-    private void addAdjacentMiddleRow(Node currentNode) {
-        int row = currentNode.getRow();
-        int col = currentNode.getCol();
-        if (col - 1 >= 0) {
-            checkNode(currentNode, col - 1, row);
-        }
-        if (col + 1 < searchArea[0].length) {
-            checkNode(currentNode, col + 1, row);
+            checkNode(currentNode, leftColumn, row);
         }
     }
 
@@ -105,6 +96,36 @@ public class UniformCost {
         }
     }
 
+    private void addAdjacentRightColumn(Node currentNode) {
+        int row = currentNode.getRow();
+        int col = currentNode.getCol();
+        int rightColumn = col + 1;
+        if (rightColumn < searchArea[0].length) {
+            if (row - 1 >= 0) {
+                checkNode(currentNode, rightColumn, row - 1);
+            }
+            if (row + 1 < searchArea.length) {
+                checkNode(currentNode, rightColumn, row + 1);
+            }
+            checkNode(currentNode, rightColumn, row);
+        }
+    }
+
+    private void addAdjacentLowerRow(Node currentNode) {
+        int row = currentNode.getRow();
+        int col = currentNode.getCol();
+        int lowerRow = row + 1;
+        if (lowerRow < searchArea.length) {
+            if (col - 1 >= 0) {
+                checkNode(currentNode, col - 1, lowerRow);
+            }
+            if (col + 1 < searchArea[0].length) {
+                checkNode(currentNode, col + 1, lowerRow);
+            }
+            checkNode(currentNode, col, lowerRow);
+        }
+    }
+
     private void checkNode(Node currentNode, int col, int row) {
         Node adjacentNode = searchArea[row][col];
         if (!adjacentNode.isBlock() && !closedSet.contains(adjacentNode)) {
@@ -118,7 +139,6 @@ public class UniformCost {
             }
         }
     }
-
 
     private int getCost(Node currentNode, Node adjacentNode) {
         int colDiff = Math.abs(currentNode.getCol() - adjacentNode.getCol());

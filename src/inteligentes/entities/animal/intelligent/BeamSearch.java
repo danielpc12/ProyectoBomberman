@@ -18,6 +18,7 @@ public class BeamSearch {
         openSet.add(startNode);
 
         while (!openSet.isEmpty()) {
+            System.out.println("openSet: " + openSet);
             List<Node> beam = new ArrayList<>();
 
             for (int i = 0; i < beamWidth && !openSet.isEmpty(); i++) {
@@ -75,11 +76,11 @@ public class BeamSearch {
         int row = node.getRow();
         int col = node.getCol();
 
-        // Agregar vecinos arriba, abajo, izquierda y derecha
-        addNeighbor(neighbors, row - 1, col, allNodes);
-        addNeighbor(neighbors, row + 1, col, allNodes);
-        addNeighbor(neighbors, row, col - 1, allNodes);
-        addNeighbor(neighbors, row, col + 1, allNodes);
+        // Cambiar el orden de los vecinos aquí
+        addNeighbor(neighbors, row, col - 1, allNodes); // Izquierda
+        addNeighbor(neighbors, row - 1, col, allNodes); // Arriba
+        addNeighbor(neighbors, row, col + 1, allNodes); // Derecha
+        addNeighbor(neighbors, row + 1, col, allNodes); // Abajo
 
         return neighbors;
     }
